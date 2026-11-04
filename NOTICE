@@ -1,0 +1,32 @@
+ed25519
+Copyright 2026 turlamai
+
+This product includes software developed by turlamai and is licensed
+under the Apache License, Version 2.0 (see LICENSE).
+
+Algorithm provenance
+====================
+
+The Ed25519 implementation in this package is an original, pure-Racket
+implementation of the algorithm specified in RFC 8032 ("Edwards-Curve
+Digital Signature Algorithm (EdDSA)"), section 5.1:
+
+  - Point arithmetic uses the complete unified extended-coordinate
+    addition formulas published in RFC 8032 section 5.1.4
+    (Hisil-Wong-Carter-Dawson, a = -1).
+  - Public-key recovery from encodings uses the decompression technique
+    of the public-domain Ed25519 reference implementation "ref10"
+    (Daniel J. Bernstein et al., https://ed25519.cr.yp.to/).
+  - SHA-512 is implemented per FIPS 180-4; its round constants and
+    initial values follow sections 4.2.3 and 5.3.3 (fractional parts of
+    cube and square roots of the first primes).
+  - The group order and curve constants are derived in code from the
+    parameters in RFC 8032 section 5.1 rather than transcribed.
+
+No code was copied from TweetNaCl or ref10; their published behavior is
+what this implementation is validated against:
+
+  - All RFC 8032 section 7.1 test vectors pass byte-for-byte.
+  - A 1000+-case randomized cross-validation against OpenSSL 3
+    (pkeyutl -rawin) confirms byte-identical signatures and mutual
+    verification (tests/cross-check.rkt).

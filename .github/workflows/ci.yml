@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  # Each main commit needs its own CI result. GitHub also replaces queued runs
+  # within a shared group, even with cancel-in-progress: false. Use run_id for
+  # non-PR events, and cancel only superseded runs of the same PR.
+  group: ci-${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Racket ${{ matrix.racket }} on ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        racket: ["9.0", "9.3"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: Bogdanp/setup-racket@2466913449df77df2bad149d1f2fc4e1ea4795dd # v1.15
+        with:
+          architecture: x64
+          distribution: full
+          variant: CS
+          version: ${{ matrix.racket }}
+      - name: Install package
+        run: raco pkg install --auto --no-docs --name ed25519 --link
+      - name: Test
+        run: raco test -p ed25519
+      - name: Build documentation
+        # Documentation is platform independent; retain Racket 9.0 + 9.3 checks.
+        if: matrix.os == 'ubuntu-latest'
+        run: raco setup --doc-index --check-pkg-deps --pkgs ed25519
+
+  cross-check:
+    # The release gate requires a real OpenSSL 3 cross-validation run:
+    # 1000 randomized cases, signatures byte-identical both ways. Only
+    # Ubuntu is needed; other platforms skip in the regular test job.
+    name: OpenSSL 3 cross-check (ubuntu)
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: Bogdanp/setup-racket@2466913449df77df2bad149d1f2fc4e1ea4795dd # v1.15
+        with:
+          architecture: x64
+          distribution: full
+          variant: CS
+          version: "9.3"
+      - name: Ensure OpenSSL 3
+        run: |
+          openssl version
+          openssl version | grep -q '^OpenSSL 3' || {
+            echo "Ubuntu runner must provide OpenSSL 3" >&2
+            exit 1
+          }
+      - name: Install package
+        run: raco pkg install --auto --no-docs --name ed25519 --link
+      - name: Run cross-check (1000 cases, hard requirement)
+        env:
+          ED25519_CROSSCHECK_REQUIRE: "1"
+          ED25519_OPENSSL: /usr/bin/openssl
+        run: raco test -p ed25519
