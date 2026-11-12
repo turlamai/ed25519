@@ -9,7 +9,7 @@ Thanks for considering a contribution.
   semantics; do not invent cryptographic shortcuts.
 - **No new dependencies.** The shipped `ed25519` collection must depend
   on `base` alone — that is the reason this package exists. Test-only
-  dependencies belong in `build-deps` and only in `tests/`.
+  dependencies belong in `build-deps` and only in `ed25519-test/`.
 - **Never skip or weaken a cryptographic test to make CI green.** If a
   test fails, the implementation is wrong or the test is wrong; say
   which and why.
@@ -39,7 +39,7 @@ Thanks for considering a contribution.
 
 ## Tests
 
-All test files live in `tests/`:
+All test files live in the private `ed25519-test/` collection:
 
 - `rfc8032.rkt` — every RFC 8032 §7.1 vector, byte-for-byte;
 - `negative.rkt` — tampering, malleability, non-canonical encodings,

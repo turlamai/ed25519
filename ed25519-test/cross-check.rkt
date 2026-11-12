@@ -38,7 +38,7 @@
 ;; on every eighth case. Length 0 is absent on purpose: the OpenSSL CLI
 ;; cannot ingest empty input files for oneshot signing ("Could not
 ;; allocate 0 bytes"); empty-message interoperability is already pinned
-;; byte-for-byte by RFC 8032 TEST 1 in tests/rfc8032.rkt.
+;; byte-for-byte by RFC 8032 TEST 1 in ed25519-test/rfc8032.rkt.
 (define base-lengths (list 1 2 31 32 63 64 1024))
 
 (define (case-message-length i)
