@@ -8,7 +8,11 @@
 (define pkg-authors '(turlamai))
 (define license 'Apache-2.0)
 
-(define deps '(["base" #:version "9.0"]))
-;; net-lib is test-only: the cross-check builds RFC 8410 PEM keys via
-;; net/base64. The shipped ed25519 collection depends on base alone.
-(define build-deps '("rackunit-lib" "net-lib" "racket-doc" "scribble-lib"))
+;; Tests ship inside this package (ed25519-test/), so their requirements
+;; are runtime deps — raco setup --check-pkg-deps classifies ed25519-test
+;; requires as run-mode (glaze/foreman precedent).
+;; net-lib is test-only in practice: the cross-check builds RFC 8410 PEM
+;; keys via net/base64. The shipped ed25519 collection itself depends on
+;; base alone.
+(define deps '(["base" #:version "9.0"] "rackunit-lib" "net-lib"))
+(define build-deps '("racket-doc" "scribble-lib"))
