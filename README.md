@@ -1,7 +1,5 @@
 # ed25519
 
-**Support:** [Issues & feedback](https://github.com/turlamai/ed25519/issues) · [Development policy](https://github.com/turlamai/turlamai.github.io/blob/master/PORTFOLIO.md)
-
 Pure-Racket Ed25519 signatures — no FFI, no native libraries, no external
 tools.
 
