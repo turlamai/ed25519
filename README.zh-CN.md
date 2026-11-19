@@ -1,7 +1,5 @@
 # ed25519
 
-**支持：**[问题与反馈](https://github.com/turlamai/ed25519/issues) · [当前交付策略](https://github.com/turlamai/turlamai.github.io/blob/master/PORTFOLIO.zh-CN.md)
-
 纯 Racket 的 Ed25519 签名——无 FFI、无原生库、无外部工具。
 
 [English](README.md)
